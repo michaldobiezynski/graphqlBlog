@@ -42,11 +42,11 @@ let hobbiesData = [
 
 //Post type
 let postData = [
-  { id: "1", comment: "blabla" },
-  { id: "2", comment: "gafga" },
-  { id: "3", comment: "another comment" },
-  { id: "4", comment: "hahah" },
-  { id: "5", comment: "words words" },
+  { id: "1", comment: "blabla", userId: "1" },
+  { id: "2", comment: "gafga", userId: "1" },
+  { id: "3", comment: "another comment", userId: "2" },
+  { id: "4", comment: "hahah", userId: "3" },
+  { id: "5", comment: "words words", userId: "4" },
 ];
 
 const {
@@ -85,6 +85,12 @@ const PostType = new GraphQLObjectType({
   fields: () => ({
     id: { type: GraphQLID },
     comment: { type: GraphQLString },
+    user: {
+      type: UserType,
+      resolve(parent, args) {
+        return _.find(usersData, { id: parent.userId });
+      },
+    },
   }),
 });
 
