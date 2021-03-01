@@ -1,5 +1,6 @@
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
+const { mongoURL } = require("../config");
 
 const schema = require("./schema/schema");
 
