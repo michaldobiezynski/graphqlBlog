@@ -1,6 +1,12 @@
 const express = require("express");
 const { graphqlHTTP } = require("express-graphql");
-const { mongoURL } = require("../config");
+const { mongoURL } = require("./config");
+const mongoose = require("mongoose");
+
+mongoose.connect(mongoURL, { useUnifiedTopology: true, useNewUrlParser: true });
+mongoose.connection.once("open", () => {
+  console.log("Yes! We are connected!");
+});
 
 const schema = require("./schema/schema");
 
