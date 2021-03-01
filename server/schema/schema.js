@@ -17,26 +17,31 @@ let hobbiesData = [
     id: "1",
     title: "Programming",
     description: "Using computers to make a better world",
+    userId: "1",
   },
   {
     id: "2",
     title: "Rowing",
     description: "Sweat and feel better before eating donuts",
+    userId: "2",
   },
   {
     id: "3",
     title: "Swimming",
     description: "Get in the water",
+    userId: "3",
   },
   {
     id: "4",
     title: "Fencing",
     description: "Hobby for fency people",
+    userId: "4",
   },
   {
     id: "5",
     title: "Hiking",
     description: "Explore the world",
+    userId: "5",
   },
 ];
 
@@ -55,6 +60,7 @@ const {
   GraphQLString,
   GraphQLInt,
   GraphQLSchema,
+  GraphQLList,
 } = graphql;
 
 //Create types
@@ -66,6 +72,12 @@ const UserType = new GraphQLObjectType({
     name: { type: GraphQLString },
     age: { type: GraphQLInt },
     profession: { type: GraphQLString },
+    posts: {
+      type: GraphQLList(PostType),
+      resolve(parent, args) {
+        return _.filter(postData, { userId: parent.id });
+      },
+    },
   }),
 });
 
@@ -76,6 +88,12 @@ const HobbyType = new GraphQLObjectType({
     id: { type: GraphQLID },
     title: { type: GraphQLString },
     description: { type: GraphQLString },
+    user: {
+      type: UserType,
+      resolve(parent, args) {
+        return _.find(usersData, { id: parent.userId });
+      },
+    },
   }),
 });
 
