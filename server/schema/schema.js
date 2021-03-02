@@ -129,9 +129,8 @@ const Mutation = new GraphQLObjectType({
     createUser: {
       type: UserType,
       args: {
-        // id: {type: GraphQLID}
         name: { type: new GraphQLNonNull(GraphQLString) },
-        age: { type: GraphQLInt },
+        age: { type: new GraphQLNonNull(GraphQLInt) },
         profession: { type: GraphQLString },
       },
 
@@ -147,10 +146,35 @@ const Mutation = new GraphQLObjectType({
         return user;
       },
     },
+
+    // update user
+    updateUser: {
+      type: UserType,
+      args: {
+        id: { type: new GraphQLNonNull(GraphQLID) },
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        age: { type: GraphQLInt },
+        profession: { type: GraphQLString },
+      },
+
+      resolve(parent, args) {
+        return (updatedUser = User.findByIdAndUpdate(
+          args.id,
+          {
+            $set: {
+              name: args.name,
+              age: args.age,
+              profession: args.profession,
+            },
+          },
+          { new: true }
+        ));
+      },
+    },
+
     createPost: {
       type: PostType,
       args: {
-        // id: {type: GraphQLID}
         comment: { type: new GraphQLNonNull(GraphQLString) },
         userId: { type: GraphQLID },
       },
