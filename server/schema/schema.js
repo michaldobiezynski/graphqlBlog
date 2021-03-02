@@ -167,11 +167,12 @@ const Mutation = new GraphQLObjectType({
       },
 
       resolve(parent, args) {
-        let post = {
-          id: args.id,
+        let post = new Post({
           comment: args.comment,
           userId: args.userId,
-        };
+        });
+
+        post.save();
 
         return post;
       },
@@ -179,20 +180,19 @@ const Mutation = new GraphQLObjectType({
     createHobby: {
       type: HobbyType,
       args: {
-        // id: {type: GraphQLID}
         title: { type: GraphQLString },
         description: { type: GraphQLString },
         userId: { type: GraphQLID },
       },
 
       resolve(parent, args) {
-        let hobby = {
-          id: args.id,
+        let hobby = new Hobby({
           title: args.title,
           description: args.description,
           userId: args.userId,
-        };
+        });
 
+        hobby.save();
         return hobby;
       },
     },
