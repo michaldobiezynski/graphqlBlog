@@ -25,13 +25,13 @@ const UserType = new GraphQLObjectType({
     posts: {
       type: GraphQLList(PostType),
       resolve(parent, args) {
-        // return _.filter(postData, { userId: parent.id });
+        return Post.find({ userId: parent.id });
       },
     },
     hobbies: {
       type: GraphQLList(HobbyType),
       resolve(parent, args) {
-        // return _.filter(hobbiesData, { userId: parent.id });
+        return Hobby.find({ userId: parent.id });
       },
     },
   }),
@@ -47,7 +47,7 @@ const HobbyType = new GraphQLObjectType({
     user: {
       type: UserType,
       resolve(parent, args) {
-        // return _.find(usersData, { id: parent.userId });
+        return User.findById(parent.userId);
       },
     },
   }),
@@ -62,7 +62,7 @@ const PostType = new GraphQLObjectType({
     user: {
       type: UserType,
       resolve(parent, args) {
-        // return _.find(usersData, { id: parent.userId });
+        return User.findById(parent.userId);
       },
     },
   }),
@@ -85,7 +85,7 @@ const RootQuery = new GraphQLObjectType({
     users: {
       type: new GraphQLList(UserType),
       resolve(parent, args) {
-        // return usersData;
+        return User.find({});
       },
     },
     hobby: {
@@ -93,18 +93,14 @@ const RootQuery = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
 
       resolve(parent, args) {
-        // return _.find(hobbiesData, {
-        //   id: args.id,
-        // });
-        // we resolve with data
-        // get and return data from a datasource
+        return Hobby.findById(args.id);
       },
     },
 
     hobbies: {
       type: new GraphQLList(HobbyType),
       resolve(parent, args) {
-        // return hobbiesData;
+        return Hobby.find({});
       },
     },
     post: {
@@ -112,18 +108,14 @@ const RootQuery = new GraphQLObjectType({
       args: { id: { type: GraphQLID } },
 
       resolve(parent, args) {
-        // return _.find(postData, {
-        //   id: args.id,
-        // });
-        // we resolve with data
-        // get and return data from a datasource
+        return Post.findById(args.id);
       },
     },
 
     posts: {
       type: new GraphQLList(PostType),
       resolve(parent, args) {
-        // return postData;
+        return Post.find({});
       },
     },
   },
