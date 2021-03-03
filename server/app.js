@@ -4,6 +4,7 @@ const { mongoURL } = require("./config");
 const mongoose = require("mongoose");
 
 const cors = require("cors");
+const port = process.env.PORT || 4000;
 
 mongoose.connect(mongoURL, {
   useUnifiedTopology: true,
@@ -28,6 +29,6 @@ app.use(
   })
 );
 
-app.listen(4000, () => {
-  console.log("Server started at port 4000");
+app.listen(port, () => {
+  console.log(`Server started at port ${port}`);
 });
