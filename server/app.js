@@ -5,7 +5,11 @@ const mongoose = require("mongoose");
 
 const cors = require("cors");
 
-mongoose.connect(mongoURL, { useUnifiedTopology: true, useNewUrlParser: true });
+mongoose.connect(mongoURL, {
+  useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useFindAndModify: false,
+});
 mongoose.connection.once("open", () => {
   console.log("Yes! We are connected!");
 });
