@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { createPost } from "../graphql/mutations";
-import { API, graphqlOperation } from "aws-amplify";
+import { API, Auth, graphqlOperation } from "aws-amplify";
 
 export const CreatePost = () => {
   const [postOwnerID, setPostOwnerID] = useState("");
@@ -8,18 +8,12 @@ export const CreatePost = () => {
   const [postTitle, setPostTitle] = useState("");
   const [postBody, setPostBody] = useState("");
 
-  const handleChangePost = (event) => {
-    event.target.name = event.target.value;
-  };
-
   const handleAddPost = async (event) => {
     event.preventDefault();
 
     const input = {
-      // postOwnerId: postOwnerID,
-      postOwnerId: "pa817623",
-      // postOwnerUserName: postOwnerUserName,
-      postOwnerUsername: "Michal",
+      postOwnerId: postOwnerID,
+      postOwnerUsername: postOwnerUserName,
       postTitle: postTitle,
       postBody: postBody,
       createdAt: new Date().toISOString(),
@@ -30,7 +24,14 @@ export const CreatePost = () => {
     setPostBody("");
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    Auth.currentUserInfo().then((user) => {
+      setPostOwnerID(user.attributes.sub);
+      setPostOwnerUserName(user.username);
+      // console.log("Curr: User: ", user.username);
+      // console.log("Attr ", user.attributes.sub);
+    });
+  }, []);
 
   return (
     <form className="add-post" onSubmit={handleAddPost} action="">
