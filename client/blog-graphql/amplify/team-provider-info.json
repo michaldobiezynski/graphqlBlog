@@ -10,6 +10,11 @@
       "StackName": "amplify-bloggraphql-dev-123451",
       "StackId": "arn:aws:cloudformation:eu-west-1:657404561742:stack/amplify-bloggraphql-dev-123451/0553c370-7ce6-11eb-814b-02b92ccedb3d",
       "AmplifyAppId": "d1mmdaykqrunxc"
+    },
+    "categories": {
+      "auth": {
+        "bloggraphql26bbc8f3": {}
+      }
     }
   }
 }
