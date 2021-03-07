@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { listPosts } from "../graphql/queries";
+import { onCreatePost } from "../graphql/subscriptions";
 import { API, graphqlOperation } from "aws-amplify";
 
 import { DeletePost } from "./DeletePost";
@@ -17,6 +18,20 @@ export const DisplayPosts = () => {
       //   console.log("All posts: ", result.data.listPosts.items);
     };
     getPosts();
+
+    API.graphql(graphqlOperation(onCreatePost)).subscribe({
+      next: (postData) => {
+        const newPost = postData.value.data.onCreatePost;
+        const prevPosts = posts.filter((post) => post.id !== newPost.id);
+
+        const updatePosts = [newPost, ...prevPosts];
+
+        setPosts(updatePosts);
+      },
+    });
+    return function cleanup() {
+      API.graphql(graphqlOperation(onCreatePost)).unsubscribe();
+    };
   }, []);
 
   const rowStyle = {

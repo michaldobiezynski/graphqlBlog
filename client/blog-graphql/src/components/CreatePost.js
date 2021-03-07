@@ -30,9 +30,7 @@ export const CreatePost = () => {
     setPostBody("");
   };
 
-  useEffect(() => {
-    // TODO: TBA
-  }, []);
+  useEffect(() => {}, []);
 
   return (
     <form className="add-post" onSubmit={handleAddPost} action="">
