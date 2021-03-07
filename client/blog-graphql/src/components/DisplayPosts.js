@@ -72,7 +72,7 @@ export const DisplayPosts = () => {
               <br />
               <span>
                 <DeletePost postId={_post.id} />
-                <EditPost />
+                <EditPost post={_post} />
               </span>
             </div>
           );

@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { createPost } from "../graphql/mutations";
+import { updatePost } from "../graphql/mutations";
 import { API, Auth, graphqlOperation } from "aws-amplify";
-import { divide } from "lodash";
 
-export const EditPost = (post) => {
+export const EditPost = ({ post }) => {
   const [show, setShow] = useState(false);
   const [id, setId] = useState("");
   const [postOwnerId, setPostOwnerId] = useState("");
@@ -27,10 +26,29 @@ export const EditPost = (post) => {
     document.body.scrollTop = 0;
     document.documentElement.scrollTop = 0;
   };
-  const handleUpdatePost = () => {
+
+  const handleTitle = (event) => {
+    setPostData({ ...postData, postTitle: event.target.value });
+  };
+
+  const handleBody = (event) => {
+    setPostData({ ...postData, postBody: event.target.value });
+  };
+
+  const handleUpdatePost = async (event) => {
+    event.preventDefault();
+
+    const input = {
+      id: post.id,
+      postOwnerId: post.postOwnerId,
+      postOwnerUsername: post.postOwnerUsername,
+      postTitle: postData.postTitle,
+      postBody: postData.postBody,
+    };
+
+    await API.graphql(graphqlOperation(updatePost, { input }));
+
     setShow(!show);
-    document.body.scrollTop = 0;
-    document.documentElement.scrollTop = 0;
   };
 
   return (
