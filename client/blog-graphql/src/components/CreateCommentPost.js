@@ -27,6 +27,7 @@ export const CreateCommentPost = ({ postId }) => {
       content: content,
       createdAt: new Date().toISOString(),
     };
+    console.log(input);
 
     await API.graphql(graphqlOperation(createComment, { input }));
 

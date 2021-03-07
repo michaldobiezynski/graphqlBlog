@@ -13,7 +13,6 @@ import { EditPost } from "./EditPost";
 import { createComment, updatePost } from "../graphql/mutations";
 import { CreateCommentPost } from "./CreateCommentPost";
 import { CommentPost } from "./CommentPost";
-import { forEach } from "lodash";
 
 export const DisplayPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -44,7 +43,7 @@ export const DisplayPosts = () => {
 
         let postsToBeUpdated = [...posts];
 
-        posts.forEach((element) => {
+        postsToBeUpdated.forEach((element) => {
           if (element.id == createComment.post.id) {
             element.comments.items.push(createdComment);
           }
@@ -116,6 +115,15 @@ export const DisplayPosts = () => {
 
               <span>
                 <CreateCommentPost postId={_post.id} />
+                {_post.comments.items && (
+                  <span style={{ fontSize: "19px", color: "gray" }}>
+                    Comments:
+                  </span>
+                )}
+                {_post.comments.items &&
+                  _post.comments.items.map((comment, index) => {
+                    return <CommentPost key={index} commentData={comment} />;
+                  })}
               </span>
             </div>
           );
