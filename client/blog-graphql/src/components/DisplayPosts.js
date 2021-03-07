@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { listPosts } from "../graphql/queries";
-import { onCreatePost, onDeletePost } from "../graphql/subscriptions";
+import {
+  onCreatePost,
+  onDeletePost,
+  onUpdatePost,
+} from "../graphql/subscriptions";
 import { API, graphqlOperation } from "aws-amplify";
 
 import { DeletePost } from "./DeletePost";
 import { EditPost } from "./EditPost";
+import { updatePost } from "../graphql/mutations";
 
 export const DisplayPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -39,9 +44,23 @@ export const DisplayPosts = () => {
         setPosts(updatePosts);
       },
     });
+    API.graphql(graphqlOperation(onUpdatePost)).subscribe({
+      next: (postData) => {
+        const index = posts.findIndex((post) => post.id === updatePost.id);
+
+        const updatedPost = postData.value.data.onUpdatePost;
+        const updatedPosts = [
+          ...posts.slice(0, index),
+          updatedPost,
+          ...posts.slice(index + 1),
+        ];
+        setPosts(updatedPosts);
+      },
+    });
     return function cleanup() {
       API.graphql(graphqlOperation(onCreatePost)).unsubscribe();
       API.graphql(graphqlOperation(onDeletePost)).unsubscribe();
+      API.graphql(graphqlOperation(onUpdatePost)).unsubscribe();
     };
   }, []);
 
