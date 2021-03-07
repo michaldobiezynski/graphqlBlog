@@ -1,6 +1,4 @@
-import React, { useEffect, useState } from "react";
-import { listPosts } from "../graphql/queries";
-import { API, graphqlOperation } from "aws-amplify";
+import React, { useEffect } from "react";
 
 export const DeletePost = () => {
   useEffect(() => {}, []);
