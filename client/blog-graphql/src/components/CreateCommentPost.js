@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { createComment, createPost } from "../graphql/mutations";
 import { API, Auth, graphqlOperation } from "aws-amplify";
 
-export const CreateCommentPost = () => {
+export const CreateCommentPost = ({ postId }) => {
   const [commentOwnerId, setCommentOwnerId] = useState("");
   const [commentOwnerUsername, setCommentOwnerUsername] = useState("");
   const [content, setContent] = useState("");
@@ -47,11 +47,9 @@ export const CreateCommentPost = () => {
           onChange={handleChangeContent}
         />
 
-        <input
-          style={{ fontSize: "19px" }}
-          className="btn"
-          value="Add Comment"
-        />
+        <button style={{ fontSize: "19px" }} className="btn">
+          Add Comment
+        </button>
       </form>
     </div>
   );

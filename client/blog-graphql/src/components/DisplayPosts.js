@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { listPosts } from "../graphql/queries";
 import {
+  onCreateComment,
   onCreatePost,
   onDeletePost,
   onUpdatePost,
@@ -9,7 +10,10 @@ import { API, graphqlOperation } from "aws-amplify";
 
 import { DeletePost } from "./DeletePost";
 import { EditPost } from "./EditPost";
-import { updatePost } from "../graphql/mutations";
+import { createComment, updatePost } from "../graphql/mutations";
+import { CreateCommentPost } from "./CreateCommentPost";
+import { CommentPost } from "./CommentPost";
+import { forEach } from "lodash";
 
 export const DisplayPosts = () => {
   const [posts, setPosts] = useState([]);
@@ -32,6 +36,21 @@ export const DisplayPosts = () => {
         const updatePosts = [newPost, ...prevPosts];
 
         setPosts(updatePosts);
+      },
+    });
+    API.graphql(graphqlOperation(onCreateComment)).subscribe({
+      next: (commentData) => {
+        const createdComment = commentData.value.data.onCreateComment;
+
+        let postsToBeUpdated = [...posts];
+
+        posts.forEach((element) => {
+          if (element.id == createComment.post.id) {
+            element.comments.items.push(createdComment);
+          }
+        });
+
+        setPosts(postsToBeUpdated);
       },
     });
     API.graphql(graphqlOperation(onDeletePost)).subscribe({
@@ -59,6 +78,7 @@ export const DisplayPosts = () => {
     });
     return function cleanup() {
       API.graphql(graphqlOperation(onCreatePost)).unsubscribe();
+      API.graphql(graphqlOperation(onCreateComment)).unsubscribe();
       API.graphql(graphqlOperation(onDeletePost)).unsubscribe();
       API.graphql(graphqlOperation(onUpdatePost)).unsubscribe();
     };
@@ -92,6 +112,10 @@ export const DisplayPosts = () => {
               <span>
                 <DeletePost postId={_post.id} />
                 <EditPost post={_post} />
+              </span>
+
+              <span>
+                <CreateCommentPost postId={_post.id} />
               </span>
             </div>
           );
