@@ -11,7 +11,7 @@ import { API, Auth, graphqlOperation } from "aws-amplify";
 
 import { DeletePost } from "./DeletePost";
 import { EditPost } from "./EditPost";
-import { createComment, updatePost } from "../graphql/mutations";
+import { createComment, createLike, updatePost } from "../graphql/mutations";
 import { CreateCommentPost } from "./CreateCommentPost";
 import { CommentPost } from "./CommentPost";
 
@@ -116,7 +116,7 @@ export const DisplayPosts = () => {
   };
 
   const likedPost = (postId) => {
-    posts.forEach((element) => {
+    posts.forEach((post) => {
       if (post.id == postId) {
         if (post.postOwnerId == ownerId) {
           return true;
@@ -129,6 +129,22 @@ export const DisplayPosts = () => {
       }
     });
     return false;
+  };
+
+  const handleLike = async (postId) => {
+    const input = {
+      numberLikes: 1,
+      likeOwnerId: ownerId,
+      likeOwnerUsername: ownerUsername,
+      likePostId: postId,
+    };
+
+    try {
+      const result = await API.graphql(graphqlOperation(createLike, { input }));
+      console.log(result);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   return (
@@ -152,6 +168,15 @@ export const DisplayPosts = () => {
               <span>
                 <DeletePost postId={_post.id} />
                 <EditPost post={_post} />
+                <span>
+                  <p
+                    onClick={() => {
+                      handleLike(_post.id);
+                    }}>
+                    <FaThumbsUp></FaThumbsUp>
+                    {_post.likes.items.length}
+                  </p>
+                </span>
               </span>
 
               <span>
