@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import { listPosts } from "../graphql/queries";
 import {
   onCreateComment,
+  onCreateLike,
   onCreatePost,
   onDeletePost,
   onUpdatePost,
 } from "../graphql/subscriptions";
-import { API, graphqlOperation } from "aws-amplify";
+import { API, Auth, graphqlOperation } from "aws-amplify";
 
 import { DeletePost } from "./DeletePost";
 import { EditPost } from "./EditPost";
@@ -14,8 +15,13 @@ import { createComment, updatePost } from "../graphql/mutations";
 import { CreateCommentPost } from "./CreateCommentPost";
 import { CommentPost } from "./CommentPost";
 
+import { FaThumbsUp } from "react-icons/fa";
+
 export const DisplayPosts = () => {
   const [posts, setPosts] = useState([]);
+  const [ownerId, setOwnerId] = useState("");
+  const [ownerUsername, setOwnerUsername] = useState("");
+  const [isHovering, setIsHovering] = useState("");
 
   useEffect(() => {
     const getPosts = async () => {
@@ -26,6 +32,11 @@ export const DisplayPosts = () => {
       //   console.log("All posts: ", result.data.listPosts.items);
     };
     getPosts();
+
+    Auth.currentUserInfo().then((user) => {
+      setOwnerId(user.attributes.sub);
+      setOwnerUsername(user.username);
+    });
 
     API.graphql(graphqlOperation(onCreatePost)).subscribe({
       next: (postData) => {
@@ -75,11 +86,25 @@ export const DisplayPosts = () => {
         setPosts(updatedPosts);
       },
     });
+    API.graphql(graphqlOperation(onCreateLike)).subscribe({
+      next: (postData) => {
+        const createdLike = postData.value.data.onCreateLike;
+
+        let postsExisting = [...posts];
+        postsExisting.forEach((post) => {
+          if (createdLike.post.id === post.id) {
+            post.likes.items.push(createdLike);
+          }
+        });
+        setPosts(postsExisting);
+      },
+    });
     return function cleanup() {
       API.graphql(graphqlOperation(onCreatePost)).unsubscribe();
       API.graphql(graphqlOperation(onCreateComment)).unsubscribe();
       API.graphql(graphqlOperation(onDeletePost)).unsubscribe();
       API.graphql(graphqlOperation(onUpdatePost)).unsubscribe();
+      API.graphql(graphqlOperation(onCreateLike)).unsubscribe();
     };
   }, []);
 
@@ -88,6 +113,22 @@ export const DisplayPosts = () => {
     padding: "10px",
     border: "1px #ccc doted",
     margin: "14px",
+  };
+
+  const likedPost = (postId) => {
+    posts.forEach((element) => {
+      if (post.id == postId) {
+        if (post.postOwnerId == ownerId) {
+          return true;
+        }
+        post.likes.items.forEach((like) => {
+          if (like.likeOwnerId == ownerId) {
+            return true;
+          }
+        });
+      }
+    });
+    return false;
   };
 
   return (
