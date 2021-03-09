@@ -22,6 +22,10 @@ export const DisplayPosts = () => {
   const [ownerId, setOwnerId] = useState("");
   const [ownerUsername, setOwnerUsername] = useState("");
   const [isHovering, setIsHovering] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [postLikedBy, setPostLikedBy] = useState([]);
+
+  let loggedInUser = ownerId;
 
   useEffect(() => {
     const getPosts = async () => {
@@ -132,18 +136,24 @@ export const DisplayPosts = () => {
   };
 
   const handleLike = async (postId) => {
-    const input = {
-      numberLikes: 1,
-      likeOwnerId: ownerId,
-      likeOwnerUsername: ownerUsername,
-      likePostId: postId,
-    };
+    if (likedPost(postId)) {
+      return setErrorMessage("Can't like your own post");
+    } else {
+      const input = {
+        numberLikes: 1,
+        likeOwnerId: ownerId,
+        likeOwnerUsername: ownerUsername,
+        likePostId: postId,
+      };
 
-    try {
-      const result = await API.graphql(graphqlOperation(createLike, { input }));
-      console.log(result);
-    } catch (error) {
-      console.error(error);
+      try {
+        const result = await API.graphql(
+          graphqlOperation(createLike, { input })
+        );
+        console.log(result);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -166,9 +176,16 @@ export const DisplayPosts = () => {
 
               <br />
               <span>
-                <DeletePost postId={_post.id} />
-                <EditPost post={_post} />
                 <span>
+                  {_post.postOwnerId == loggedInUser && (
+                    <DeletePost postId={_post.id} />
+                  )}
+                  {_post.postOwnerId == loggedInUser && (
+                    <EditPost post={_post} />
+                  )}
+                  <p className="alert">
+                    {_post.postOwnerId === loggedInUser ? errorMessage : ""}{" "}
+                  </p>
                   <p
                     onClick={() => {
                       handleLike(_post.id);
